@@ -1,4 +1,9 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  CreateDateColumn,
+  Entity,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 
 @Entity()
 export class HistoryEvent {
@@ -13,4 +18,10 @@ export class HistoryEvent {
 
   @Column()
   eventsMarkup: string;
+
+  @Column()
+  eventIndex: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
 }

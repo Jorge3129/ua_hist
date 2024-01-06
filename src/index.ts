@@ -37,6 +37,7 @@ const main = async () => {
           time: zod.string(),
           events: zod.string(),
           eventsMarkup: zod.string(),
+          eventIndex: zod.number(),
         })
       );
 
@@ -51,7 +52,11 @@ const main = async () => {
   app.get(
     "/",
     wrap(async (_req, res) => {
-      const savedEvents = await em.find(HistoryEvent);
+      const savedEvents = await em.find(HistoryEvent, {
+        order: {
+          eventIndex: "ASC",
+        },
+      });
 
       res.status(200).json(savedEvents);
     })
