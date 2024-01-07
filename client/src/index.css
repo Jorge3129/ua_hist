@@ -1,0 +1,30 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+menu:not(article menu),
+ol:not(article ol),
+ul:not(article ul) {
+  list-style: none;
+}
+
+html {
+  height: 100%;
+}
+body {
+  min-height: 100%;
+}
+
+a {
+  text-decoration: none;
+  color: rgb(81, 0, 157);
+  border-radius: 2px;
+
+  &:hover {
+    background-color: rgb(204, 190, 255);
+  }
+}

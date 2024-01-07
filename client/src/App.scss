@@ -1,0 +1,47 @@
+.main {
+  display: flex;
+}
+
+.map {
+  flex: 1;
+}
+
+.records_list {
+  display: flex;
+  width: 40%;
+  height: 100vh;
+  flex-direction: column;
+  overflow-y: scroll;
+
+  .record {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    border-radius: 5px;
+
+    &:hover {
+      cursor: pointer;
+      background-color: rgb(228, 235, 255);
+    }
+
+    .record_time {
+      width: 30%;
+      display: flex;
+      justify-content: flex-end;
+      padding: 0.5em;
+    }
+
+    .record_desc {
+      padding: 0.5em;
+      width: 70%;
+      //   display: flex;
+      //   justify-content: flex-start;
+    }
+  }
+}
+
+@media screen and (max-width: 900px) {
+  .records_list {
+    width: 50%;
+  }
+}

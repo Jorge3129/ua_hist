@@ -1,0 +1,14 @@
+.leaflet_tooltip {
+  font-weight: 600;
+  background-color: transparent;
+  box-shadow: none;
+  border: none;
+  $halo: white;
+  text-shadow: -1px -1px 0 $halo, 1px -1px 0 $halo, -1px 1px 0 $halo,
+    1px 1px 0 $halo;
+
+  &::after,
+  &::before {
+    display: none;
+  }
+}
