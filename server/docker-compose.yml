@@ -11,7 +11,8 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - ua-hist_postgres_data:/var/lib/postgresql/data
 
 volumes:
-  postgres_data:
+  ua-hist_postgres_data:
+    external: true
