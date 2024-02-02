@@ -9,8 +9,7 @@ import { z } from "zod";
 
 const configSchema = z.object({
   DATABASE_URL: z.string(),
-})
-
+});
 
 export type Config = z.infer<typeof configSchema>;
 export const config = configSchema.parse(process.env);

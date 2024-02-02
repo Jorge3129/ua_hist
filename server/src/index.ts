@@ -10,7 +10,7 @@ const main = async () => {
   app.use(
     cors({
       origin: "*",
-    })
+    }),
   );
 
   type ReqHandler = (...p: Parameters<RequestHandler>) => Promise<void>;
@@ -29,17 +29,17 @@ const main = async () => {
           events: z.string(),
           eventsMarkup: z.string(),
           eventIndex: z.number(),
-        })
+        }),
       );
 
       const eventsDto = schema.parse(req.body);
 
       const savedEvents = await prisma.historyEvent.createMany({
-        data: eventsDto
-      })
+        data: eventsDto,
+      });
 
       res.status(201).json(savedEvents);
-    })
+    }),
   );
 
   app.get(
@@ -47,12 +47,12 @@ const main = async () => {
     wrap(async (_req, res) => {
       const savedEvents = await prisma.historyEvent.findMany({
         orderBy: {
-          eventIndex: "asc"
-        }
-      })
+          eventIndex: "asc",
+        },
+      });
 
       res.status(200).json(savedEvents);
-    })
+    }),
   );
 
   app.delete(
@@ -60,18 +60,18 @@ const main = async () => {
     wrap(async (req, res) => {
       const schema = z.object({
         id: z.string().uuid(),
-      })
+      });
 
       const { id } = schema.parse(req.query);
 
       await prisma.historyEvent.delete({
         where: {
           id: id,
-        }
-      })
+        },
+      });
 
       res.status(204).send();
-    })
+    }),
   );
 
   app.use((...args: Parameters<ErrorRequestHandler>) => {
@@ -89,11 +89,13 @@ const main = async () => {
   app.listen(appPort, () => console.log(`Server running on port ${appPort}`));
 };
 
-main().then(async () => {
-  await prisma.$disconnect();
-}).catch(async (e) => {
-  console.error(e);
-  await prisma.$disconnect();
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
 
-  process.exit(1);
-});
+    process.exit(1);
+  });
