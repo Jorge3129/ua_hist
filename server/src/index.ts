@@ -1,92 +1,89 @@
-import express, { RequestHandler, ErrorRequestHandler } from "express";
+import Fastify from "fastify";
 import { z } from "zod";
-import cors from "cors";
+import fastifyCors from "@fastify/cors";
 import { prisma } from "./prisma";
+import { Prisma } from "@prisma/client";
 
 const main = async () => {
-  const app = express();
+  const f = Fastify({
+    logger: true,
+  });
 
-  app.use(express.json());
-  app.use(
-    cors({
-      origin: "*",
-    }),
-  );
-
-  type ReqHandler = (...p: Parameters<RequestHandler>) => Promise<void>;
-
-  const wrap =
-    (fn: ReqHandler): ReqHandler =>
-    (...args) =>
-      fn(...args).catch((e) => args[2](e));
-
-  app.post(
-    "/",
-    wrap(async (req, res) => {
-      const schema = z.array(
-        z.object({
-          time: z.string(),
-          events: z.string(),
-          eventsMarkup: z.string(),
-          eventIndex: z.number(),
-        }),
-      );
-
-      const eventsDto = schema.parse(req.body);
-
-      const savedEvents = await prisma.historyEvent.createMany({
-        data: eventsDto,
+  f.setErrorHandler(async (err, _req, rep) => {
+    if (err instanceof z.ZodError) {
+      return rep.status(400).send({
+        message: "Invalid request",
+        issues: err.issues,
       });
+    }
+    if (err instanceof Prisma.PrismaClientKnownRequestError) {
+      const code = err.code;
 
-      res.status(201).json(savedEvents);
-    }),
-  );
+      // not found
+      if (code === "P2018" || code === "P2025") {
+        return rep.status(404).send({
+          message: "Not found",
+        });
+      }
+    }
 
-  app.get(
-    "/",
-    wrap(async (_req, res) => {
-      const savedEvents = await prisma.historyEvent.findMany({
-        orderBy: {
-          eventIndex: "asc",
-        },
-      });
+    return rep.status(500).send(err.message);
+  });
 
-      res.status(200).json(savedEvents);
-    }),
-  );
+  f.register(fastifyCors, {
+    origin: "*",
+  });
 
-  app.delete(
-    "/",
-    wrap(async (req, res) => {
-      const schema = z.object({
-        id: z.string().uuid(),
-      });
+  f.post("/", async (req, res) => {
+    const schema = z.array(
+      z.object({
+        time: z.string(),
+        events: z.string(),
+        eventsMarkup: z.string(),
+        eventIndex: z.number(),
+      }),
+    );
 
-      const { id } = schema.parse(req.query);
+    const eventsDto = schema.parse(req.body);
 
-      await prisma.historyEvent.delete({
-        where: {
-          id: id,
-        },
-      });
+    const savedEvents = await prisma.historyEvent.createMany({
+      data: eventsDto,
+    });
 
-      res.status(204).send();
-    }),
-  );
+    res.status(201).send(savedEvents);
+  });
 
-  app.use((...args: Parameters<ErrorRequestHandler>) => {
-    const [err, _req, res] = args;
+  f.get("/", async () => {
+    return await prisma.historyEvent.findMany({
+      orderBy: {
+        eventIndex: "asc",
+      },
+    });
+  });
 
-    console.log({ err });
+  f.delete("/:id", async (req, res) => {
+    const schema = z.object({
+      id: z.string().uuid(),
+    });
 
-    res.status(500).json({
-      error: err.message,
+    const { id } = schema.parse(req.params);
+
+    await prisma.historyEvent.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    res.status(204).send({
+      message: "deleted",
     });
   });
 
   const appPort = 8000;
 
-  app.listen(appPort, () => console.log(`Server running on port ${appPort}`));
+  f.listen({
+    port: appPort,
+  });
 };
 
 main()
