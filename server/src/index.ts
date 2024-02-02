@@ -1,18 +1,9 @@
 import express, { RequestHandler, ErrorRequestHandler } from "express";
-import dataSource from "./data-source";
-import zod from "zod";
-import { HistoryEvent } from "./entity/history-event.entity";
+import { z } from "zod";
 import cors from "cors";
+import { prisma } from "./prisma";
 
 const main = async () => {
-  await dataSource.initialize();
-  console.log("Data Source initialized");
-
-  await dataSource.runMigrations();
-  console.log("DB Schema updated");
-
-  const em = dataSource.manager;
-
   const app = express();
 
   app.use(express.json());
@@ -32,18 +23,20 @@ const main = async () => {
   app.post(
     "/",
     wrap(async (req, res) => {
-      const schema = zod.array(
-        zod.object({
-          time: zod.string(),
-          events: zod.string(),
-          eventsMarkup: zod.string(),
-          eventIndex: zod.number(),
+      const schema = z.array(
+        z.object({
+          time: z.string(),
+          events: z.string(),
+          eventsMarkup: z.string(),
+          eventIndex: z.number(),
         })
       );
 
       const eventsDto = schema.parse(req.body);
 
-      const savedEvents = await em.save(HistoryEvent, eventsDto);
+      const savedEvents = await prisma.historyEvent.createMany({
+        data: eventsDto
+      })
 
       res.status(201).json(savedEvents);
     })
@@ -52,11 +45,11 @@ const main = async () => {
   app.get(
     "/",
     wrap(async (_req, res) => {
-      const savedEvents = await em.find(HistoryEvent, {
-        order: {
-          eventIndex: "ASC",
-        },
-      });
+      const savedEvents = await prisma.historyEvent.findMany({
+        orderBy: {
+          eventIndex: "asc"
+        }
+      })
 
       res.status(200).json(savedEvents);
     })
@@ -64,8 +57,18 @@ const main = async () => {
 
   app.delete(
     "/",
-    wrap(async (_req, res) => {
-      await em.delete(HistoryEvent, {});
+    wrap(async (req, res) => {
+      const schema = z.object({
+        id: z.string().uuid(),
+      })
+
+      const { id } = schema.parse(req.query);
+
+      await prisma.historyEvent.delete({
+        where: {
+          id: id,
+        }
+      })
 
       res.status(204).send();
     })
@@ -86,4 +89,11 @@ const main = async () => {
   app.listen(appPort, () => console.log(`Server running on port ${appPort}`));
 };
 
-main();
+main().then(async () => {
+  await prisma.$disconnect();
+}).catch(async (e) => {
+  console.error(e);
+  await prisma.$disconnect();
+
+  process.exit(1);
+});
