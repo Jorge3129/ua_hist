@@ -1,6 +1,7 @@
 {
   "name": "ua_hist",
   "version": "1.0.0",
+  "license": "MIT",
   "description": "",
   "main": "index.js",
   "workspaces": [
@@ -11,6 +12,5 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC"
+  "author": ""
 }

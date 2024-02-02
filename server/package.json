@@ -1,9 +1,12 @@
 {
   "main": "dist/index.js",
+  "license": "MIT",
   "scripts": {
+    "dev": "tsx watch --ignore src/foo.ts src/index.ts | pino-pretty",
+    "debug": "tsx --inspect src/index.ts",
+    "brk": "tsx --inspect-brk src/index.ts",
     "postinstall": "prisma generate",
     "test": "jest",
-    "dev": "nodemon src/index.ts",
     "db:drop": "prisma migrate reset",
     "db:migrate": "prisma migrate deploy",
     "db:seed": "yarn run exec prisma/seed.ts",
@@ -13,9 +16,9 @@
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.10.6",
-    "nodemon": "^3.0.2",
     "prisma": "^5.9.1",
-    "ts-node": "^10.9.2"
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.0"
   },
   "dependencies": {
     "@prisma/client": "^5.9.1",
