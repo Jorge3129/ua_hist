@@ -1,7 +1,7 @@
 import { GeoJsonObject } from "geojson";
 import { bosporus1, bosporus2, bosporus3, bosporus4 } from "./bosporus";
 import { v4 as uuid } from "uuid";
-import { TimedData, TimedDataPt, getForEventIndexCurried } from "./timed-data";
+import { TimedData, TimedDataPt, getForEventIndex } from "./timed-data";
 
 export type GeoInfo = {
   id: string;
@@ -36,4 +36,4 @@ const geosWithDates: TimedData<GeoInfo>[] = (<TimedDataPt<GeoInfo>[]>[
   ],
 ]).map(([geo, timeInfo]): GeoWithDates => [{ ...geo, id: uuid() }, timeInfo]);
 
-export const getGeos = getForEventIndexCurried(geosWithDates);
+export const getGeos = getForEventIndex.bind(null, geosWithDates);

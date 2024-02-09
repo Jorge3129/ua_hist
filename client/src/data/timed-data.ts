@@ -28,21 +28,19 @@ export const getForEventIndex = <TData>(
     .map(([data]) => data);
 };
 
-export const getForEventIndexCurried =
-  <TData>(timedData: TimedData<TData>[]) =>
-  (currentEventIndex: number): TData[] => {
-    return timedData
-      .filter(([_, timeInfo]) => {
-        if (Array.isArray(timeInfo)) {
-          const [start, end] = timeInfo;
+export function getForEventIndexCurried<TData>(timedData: TimedData<TData>[], currentEventIndex: number): TData[] {
+  return timedData
+    .filter(([_, timeInfo]) => {
+      if (Array.isArray(timeInfo)) {
+        const [start, end] = timeInfo;
 
-          return (
-            start <= currentEventIndex &&
-            (end === undefined || currentEventIndex < end)
-          );
-        }
+        return (
+          start <= currentEventIndex &&
+          (end === undefined || currentEventIndex < end)
+        );
+      }
 
-        return currentEventIndex === timeInfo;
-      })
-      .map(([data]) => data);
-  };
+      return currentEventIndex === timeInfo;
+    })
+    .map(([data]) => data);
+}
