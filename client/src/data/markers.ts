@@ -1,5 +1,5 @@
 import { v4 as uuid } from "uuid";
-import { TimedData, TimedDataPt, getForEventIndex } from "./timed-data";
+import { TimedData, TimedDataPt, getForEventIndexCurried } from "./timed-data";
 
 export type MarkerInfo = {
   id: string;
@@ -80,4 +80,4 @@ const markersWithDates: TimedData<MarkerInfo>[] = (<TimedDataPt<MarkerInfo>[]>[
   ]
 );
 
-export const getMarkers = getForEventIndex.bind(null, markersWithDates);
+export const getMarkers = getForEventIndexCurried(markersWithDates);
