@@ -15,4 +15,3 @@ services:
 
 volumes:
   ua-hist_postgres_data:
-    external: true

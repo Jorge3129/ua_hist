@@ -1,31 +1,42 @@
 {
-  "name": "ua-hist",
-  "version": "1.0.0",
-  "description": "",
   "main": "dist/index.js",
+  "license": "MIT",
   "scripts": {
+    "dev": "tsx watch --ignore src/foo.ts src/index.ts | pino-pretty",
+    "debug": "tsx --inspect src/index.ts",
+    "brk": "tsx --inspect-brk src/index.ts",
+    "postinstall": "prisma generate",
     "test": "jest",
-    "dev": "nodemon src/index.ts",
-    "typeorm": "typeorm-ts-node-commonjs",
-    "mg:new": "npm run typeorm -- migration:create",
-    "mg:gen": "npm run typeorm -- migration:generate -d src/data-source.ts",
-    "mg:up": "npm run typeorm -- migration:run -d src/data-source.ts",
-    "mg:down": "npm run typeorm -- migration:revert -d src/data-source.ts"
+    "db:drop": "prisma migrate reset",
+    "db:migrate": "prisma migrate deploy",
+    "db:seed": "yarn run exec prisma/seed.ts",
+    "db:update": "prisma migrate dev"
   },
-  "author": "Heorhii Sanchenko",
-  "license": "ISC",
   "devDependencies": {
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
     "@types/node": "^20.10.6",
-    "nodemon": "^3.0.2",
-    "ts-node": "^10.9.2"
+    "@typescript-eslint/eslint-plugin": "^6.11.0",
+    "@typescript-eslint/parser": "^6.11.0",
+    "eslint": "^8.53.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-prettier": "^5.0.1",
+    "pino-pretty": "^10.3.1",
+    "prettier": "^3.2.0",
+    "prisma": "^5.9.1",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.7.0"
   },
   "dependencies": {
+    "@fastify/cors": "^9.0.1",
+    "@prisma/client": "^5.9.1",
+    "@types/fastify-cors": "^2.1.0",
     "cors": "^2.8.5",
+    "dotenv": "^16.4.1",
     "express": "^4.18.2",
+    "fastify": "^4.26.0",
+    "fastify-type-provider-zod": "^1.1.9",
     "pg": "^8.11.3",
-    "typeorm": "^0.3.19",
     "zod": "^3.22.4"
   }
 }
